@@ -7,7 +7,7 @@ type Props = {
   disabled?: boolean;
   selected?: boolean;
   state?: "idle" | "correct" | "wrong" | "best";
-  hint?: string;
+  hint?: string | undefined;
 };
 
 export function OptionButton({

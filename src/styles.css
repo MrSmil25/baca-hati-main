@@ -168,3 +168,40 @@
     color: var(--color-foreground);
   }
 }
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background-image:
+      radial-gradient(60% 40% at 15% 0%, oklch(0.94 0.045 55 / 0.75), transparent 70%),
+      radial-gradient(55% 40% at 90% 8%, oklch(0.93 0.04 300 / 0.7), transparent 72%),
+      radial-gradient(50% 35% at 50% 100%, oklch(0.93 0.035 150 / 0.6), transparent 75%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+}
+
+@utility surface-card {
+  background-color: var(--color-card);
+  border-radius: var(--radius-3xl);
+  box-shadow: var(--shadow-card);
+  border: 1px solid oklch(0.93 0.02 60 / 0.8);
+}
+
+@utility soft-shadow {
+  box-shadow: var(--shadow-soft);
+}
+
+@utility animate-rise {
+  animation: rise 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}

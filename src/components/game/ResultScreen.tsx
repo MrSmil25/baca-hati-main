@@ -1,21 +1,28 @@
-import { dimensionNote, getPersona, type Totals } from "@/lib/scoring";
+import { categoryLabel } from "@/data/cards";
+import type { GameState } from "@/lib/gameState";
+import { strongestCategory, weakestCategory } from "@/lib/gameState";
+import { matchPersona, personaText } from "@/lib/personas";
+import { Bunny } from "./Bunny";
 
 type Props = {
-  totals: Totals;
-  cardsPlayed: number;
+  state: GameState;
+  totalCards: number;
   onRestart: () => void;
 };
 
-export function ResultScreen({ totals, cardsPlayed, onRestart }: Props) {
-  const persona = getPersona(totals, cardsPlayed);
+export function ResultScreen({ state, totalCards, onRestart }: Props) {
+  const played = state.answeredCards.length;
+  const persona = matchPersona(state.totalScore, played);
+  const strongest = strongestCategory(state);
+  const weakest = weakestCategory(state);
 
   const rows = [
-    { key: "insight" as const, label: "Insight", value: totals.insight, tone: "bg-lavender/70 text-lavender-foreground" },
-    { key: "empathy" as const, label: "Empathy", value: totals.empathy, tone: "bg-sage/70 text-sage-foreground" },
+    { key: "insight" as const, label: "Insight", value: state.totalScore.insight, tone: "bg-lavender/70 text-lavender-foreground" },
+    { key: "empathy" as const, label: "Empathy", value: state.totalScore.empathy, tone: "bg-sage/70 text-sage-foreground" },
     {
       key: "socialDamage" as const,
       label: "Social Damage",
-      value: totals.socialDamage,
+      value: state.totalScore.socialDamage,
       tone: "bg-peach/80 text-peach-foreground",
     },
   ];
@@ -23,12 +30,13 @@ export function ResultScreen({ totals, cardsPlayed, onRestart }: Props) {
   return (
     <div className="animate-rise surface-card space-y-6 px-6 py-8">
       <div className="text-center">
-        <span className="inline-flex rounded-full bg-lavender/70 px-3 py-1 text-xs font-semibold text-lavender-foreground">
-          {cardsPlayed} kartu selesai
+        <Bunny pose="happy" className="mx-auto size-28" hop />
+        <span className="mt-4 inline-flex rounded-full bg-lavender/70 px-3 py-1 text-xs font-semibold text-lavender-foreground">
+          {played} kartu selesai
         </span>
-        <h1 className="mt-4 text-3xl text-foreground">{persona.title}</h1>
+        <h1 className="mt-4 text-3xl text-rose">{persona.name}</h1>
         <p className="mt-3 text-[0.95rem] leading-relaxed text-muted-foreground">
-          {persona.description}
+          {personaText(persona, true, state.nickname)}
         </p>
       </div>
 
@@ -43,12 +51,22 @@ export function ResultScreen({ totals, cardsPlayed, onRestart }: Props) {
                 {row.value > 0 ? `+${row.value}` : row.value}
               </span>
             </div>
-            <p className="mt-2 text-xs text-muted-foreground">
-              {dimensionNote(row.key, row.value, cardsPlayed)}
-            </p>
           </div>
         ))}
       </div>
+
+      {strongest ? (
+        <p className="text-center text-xs text-muted-foreground">
+          Paling jago di:{" "}
+          <span className="font-semibold text-foreground">{categoryLabel(strongest)}</span>
+        </p>
+      ) : null}
+      {weakest ? (
+        <p className="text-center text-xs text-muted-foreground">
+          Masih perlu diasah:{" "}
+          <span className="font-semibold text-foreground">{categoryLabel(weakest)}</span>
+        </p>
+      ) : null}
 
       <button
         type="button"
